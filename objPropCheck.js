@@ -15,45 +15,39 @@
  * @returns {void}
  */
 function objPropCheck(obj, prop, opt) {
-  const properties = {
-    obj  : obj,
-    prop : prop,
-    opt  : opt,
-  }
+  const args = { obj : obj, prop : prop, opt : opt };
   const defaults = {
     attempts : 0,
     delay    : 100,
     debug    : false,
-    callback : ()=>console.log( 'objPropCheck success', properties ),
-    failure  : ()=>console.log( 'objPropCheck failure', properties ),
+    callback : (args)=>console.log( 'objPropCheck success', args ),
+    failure  : (args)=>console.log( 'objPropCheck failure', args ),
   };
-  const usage = 'objPropCheck( <obj>, <prop>, [<options>] )';
+  const usage = 'objPropCheck( <obj>, <prop>, [<opt>] )';
   if ( ( typeof obj !== 'object' ) ||
        ( typeof prop !== 'string' || prop.length === 0 ) ) {
-    console.error( usage, {options: defaults} );
-    throw new Error( 'objPropCheck - invalid properties' );
+    console.error( usage, {opt: defaults} );
+    throw new Error( 'objPropCheck - invalid arguments' );
   }
   const options = { ...defaults, ...opt };
-  properties.opt = options;
+  args.opt = options;
   let interval = null;
   let attempts = 0;
   const check = () => {
     attempts++;
     if ( options.debug ) {
-      console.log( 'objPropCheck.check', attempts, properties );
+      console.log( 'objPropCheck.check', attempts, args );
     }
     if ( typeof obj[prop] !== 'undefined' ) {
       clearInterval(interval);
-      properties.attempts = attempts;
-      options.callback( properties );
+      options.callback( { ...args, attempts: attempts } );
     } else
     if ( options.attempts > 0 ) {
       if ( attempts >= options.attempts ) {
         clearInterval(interval);
-        properties.attempts = attempts;
-        options.failure( properties );
+        options.failure( { ...args, attempts: attempts } );
       }
     }
   };
   interval = setInterval( check, options.delay );
-};
+}
