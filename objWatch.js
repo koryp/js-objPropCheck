@@ -1,7 +1,7 @@
 /**
- * Sets an interval to check for the existence of either:
+ * Sets an interval to watch for the existence of either:
  * - a property in an object; or
- * - an element within a DOM object
+ * - an element in a DOM object
  * If found, a callback function is executed.
  * An option for number of attempts may be set which, if exceeded, executes a
  * failure callback function.
@@ -16,33 +16,32 @@
  * @param {function} [opt.failure]     Called when attempts are exceeded.
  * @returns {void}
  */
-function objPropCheck(obj, prop, opt) {
+function objWatch(obj, prop, opt) {
   const args = { obj: obj, prop: prop, opt: opt }
   const defaults = {
     attempts: 0,
     delay: 100,
     debug: false,
-    callback: (result, args) =>
-      console.log("objPropCheck success", result, args),
-    failure: (args) => console.log("objPropCheck failure", args),
+    callback: (result, args) => console.log("objWatch success", result, args),
+    failure: (args) => console.log("objWatch failure", args),
   }
-  const usage = "objPropCheck( <obj> , <prop> [ , <opt> ] )"
+  const usage = "objWatch( <obj> , <prop> [ , <opt> ] )"
   if (
     typeof obj !== "object" ||
     typeof prop !== "string" ||
     prop.length === 0
   ) {
     console.error(usage, { opt: defaults })
-    throw new Error("objPropCheck - invalid arguments")
+    throw new Error("objWatch - invalid arguments")
   }
   const options = Object.assign({}, defaults, opt)
   args.opt = options
   let interval = null
   let attempts = 0
-  const check = () => {
+  const watch = () => {
     attempts++
     if (options.debug) {
-      console.log("objPropCheck.check", attempts, args)
+      console.log("objWatch.watch", attempts, args)
     }
     if (typeof obj.querySelectorAll === "function") {
       let elements = obj.querySelectorAll(prop)
@@ -69,5 +68,5 @@ function objPropCheck(obj, prop, opt) {
       }
     }
   }
-  interval = setInterval(check, options.delay)
+  interval = setInterval(watch, options.delay)
 }
