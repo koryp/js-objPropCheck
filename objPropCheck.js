@@ -15,39 +15,39 @@
  * @returns {void}
  */
 function objPropCheck(obj, prop, opt) {
-  const args = { obj : obj, prop : prop, opt : opt };
+  const args = { obj: obj, prop: prop, opt: opt }
   const defaults = {
-    attempts : 0,
-    delay    : 100,
-    debug    : false,
-    callback : (args)=>console.log( 'objPropCheck success', args ),
-    failure  : (args)=>console.log( 'objPropCheck failure', args ),
-  };
-  const usage = 'objPropCheck( <obj>, <prop>, [<opt>] )';
-  if ( ( typeof obj !== 'object' ) ||
-       ( typeof prop !== 'string' || prop.length === 0 ) ) {
-    console.error( usage, {opt: defaults} );
-    throw new Error( 'objPropCheck - invalid arguments' );
+    attempts: 0,
+    delay: 100,
+    debug: false,
+    callback: (args) => console.log("objPropCheck success", args),
+    failure: (args) => console.log("objPropCheck failure", args),
   }
-  const options = { ...defaults, ...opt };
-  args.opt = options;
-  let interval = null;
-  let attempts = 0;
+  const usage = "objPropCheck( <obj> , <prop> [ , <opt> ] )"
+  if (
+    typeof obj !== "object" ||
+    typeof prop !== "string" ||
+    prop.length === 0
+  ) {
+    console.error(usage, { opt: defaults })
+    throw new Error("objPropCheck - invalid arguments")
+  }
+  const options = Object.assign({}, defaults, opt)
+  args.opt = options
+  let interval = null
+  let attempts = 0
   const check = () => {
-    attempts++;
-    if ( options.debug ) {
-      console.log( 'objPropCheck.check', attempts, args );
+    attempts++
+    if (options.debug) {
+      console.log("objPropCheck.check", attempts, args)
     }
-    if ( typeof obj[prop] !== 'undefined' ) {
-      clearInterval(interval);
-      options.callback( { ...args, attempts: attempts } );
-    } else
-    if ( options.attempts > 0 ) {
-      if ( attempts >= options.attempts ) {
-        clearInterval(interval);
-        options.failure( { ...args, attempts: attempts } );
-      }
+    if (typeof obj[prop] !== "undefined") {
+      clearInterval(interval)
+      options.callback(Object.assign({}, args, { attempts: attempts }))
+    } else if (options.attempts > 0 && attempts >= options.attempts) {
+      clearInterval(interval)
+      options.failure(Object.assign({}, args, { attempts: attempts }))
     }
-  };
-  interval = setInterval( check, options.delay );
+  }
+  interval = setInterval(check, options.delay)
 }
